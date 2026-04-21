@@ -1,0 +1,60 @@
+{% extends "master.html" %}
+
+{% block title %}Templates{% endblock title %}
+
+{% block body %}
+    <div class="row d-flex align-items-center">
+        <div class="col-12 d-flex justify-content-between mb-2">
+            <a href="/create_template/" class="btn btn-success">
+                <i class="bi bi-file-earmark-plus"></i> New Template
+            </a>
+            <a href="/generate_template/" class="btn btn-success">
+                <i class="bi bi-file-earmark-plus"></i> Generate Template
+            </a>
+        </div>
+    </div>
+
+    {% for template in templates %}
+        <div class="card text-dark bg-light mb-2">
+            <div class="card-body">
+                <div class="row d-flex align-items-center">
+                    <div class="col-md-9 d-flex flex-column justify-content-between">
+                        <div class="mb-2">
+                            <h3><a href="/{{template.id}}/" class="nav-link">{{ template.name }}</a></h3>
+                        </div>
+                        <div>
+                            <a href="/{{template.id}}/" class="btn btn-success mb-1">
+                                <i class="bi bi-info-circle"></i> Details
+                            </a>
+                            <a href="/edit/{{template.id}}/" class="btn btn-success mb-1">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <a href="/new/{{template.id}}/" class="btn btn-success mb-1">
+                                <i class="bi bi-file-earmark-pdf"></i> New PDF
+                            </a>
+                            <!-- Dropdown for Datasets -->
+                            <div class="btn-group mb-1">
+                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-database"></i> Preload with Dataset
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for dataset in datasets %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'dataset_use' dataset.id template.id %}">
+                                                {{ dataset.name }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <!-- Template Image with reduced size using Bootstrap classes -->
+                        <img src="/media/source_files/{{ template.label_path }}" class="img-fluid img-thumbnail" alt="Template Preview">
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock body %}

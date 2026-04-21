@@ -1,0 +1,110 @@
+{
+    "id": "6ead7902-c482-4207-b527-ba029d565d03",
+    "name": "Rechnung",
+    "created_at": "2024-10-04",
+    "font": "Helvetica",
+    "font_size": 10,
+    "source": {
+        "template": {
+            "index": 1,
+            "pages": 1,
+            "file_path": "6ead7902-c482-4207-b527-ba029d565d03_rechnung.pdf",
+            "label_path": "6ead7902-c482-4207-b527-ba029d565d03_label.jpg",
+            "prediction_path": "6ead7902-c482-4207-b527-ba029d565d03_prediction.jpg"
+        },
+        "attachments": []
+    },
+    "fields": [
+        {
+            "name": "preis",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 429.0,
+            "pos_y": 316.2,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "anzahl",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 429.0,
+            "pos_y": 372.8,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "artikel",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 90.3,
+            "pos_y": 372.8,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "e-mail",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 90.3,
+            "pos_y": 553.4,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "addresse",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 90.3,
+            "pos_y": 609.7,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "nachname",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 344.4,
+            "pos_y": 666.4,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "vorname",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 90.3,
+            "pos_y": 666.4,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "r.-nr.",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 401.0,
+            "pos_y": 734.1,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "datum",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 401.0,
+            "pos_y": 762.4,
+            "font_size": 12,
+            "font": "Helvetica"
+        }
+    ],
+    "last_updated": "2024-10-04"
+}

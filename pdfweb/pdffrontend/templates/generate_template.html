@@ -1,0 +1,173 @@
+{% extends "master.html" %}
+{% block body %}
+    <div class="container mt-5">
+        <h1>Generate Template from .pdf file</h1>
+        <form method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="template_name" class="form-label">Template Name</label>
+                <input type="text" id="template_name" name="template_name" class="form-control" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="source_file" class="form-label">Template Source File</label>
+                <input type="file" id="source_file" name="source_file" class="form-control" accept=".pdf" required>
+            </div>
+
+            <!-- LLM Configuration Section -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Field Detection Method</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Method Selection -->
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="detection_method" id="traditional_method" value="traditional" checked>
+                        <label class="form-check-label" for="traditional_method">
+                            <strong>Traditional Algorithm</strong>
+                            <small class="text-muted d-block">Fast, rule-based detection using spatial analysis</small>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="detection_method" id="llm_method" value="llm">
+                        <label class="form-check-label" for="llm_method">
+                            <strong>AI-Powered Detection</strong>
+                            <small class="text-muted d-block">Advanced semantic analysis using Large Language Models</small>
+                        </label>
+                    </div>
+
+                    <!-- LLM Provider Selection (hidden by default) -->
+                    <div id="llm_options" class="mt-3 ps-4" style="display: none;">
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle"></i> AI detection provides better results for complex layouts but requires API access.
+                        </div>
+                        
+                        <label class="form-label">Select AI Provider:</label>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="llm_provider" id="openai" value="openai" checked>
+                            <label class="form-check-label" for="openai">
+                                OpenAI GPT-4
+                                <small class="text-muted">(High accuracy, ~$0.02/page)</small>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="llm_provider" id="gemini" value="gemini">
+                            <label class="form-check-label" for="gemini">
+                                Google Gemini
+                                <small class="text-muted">(Good accuracy, ~$0.01/page)</small>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="llm_provider" id="ollama" value="ollama">
+                            <label class="form-check-label" for="ollama">
+                                Local Ollama
+                                <small class="text-muted">(Free, requires local setup)</small>
+                            </label>
+                        </div>
+
+                        <!-- API Status Check -->
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="check_api_status">
+                                <i class="bi bi-wifi"></i> Check API Connection
+                            </button>
+                            <span id="api_status" class="ms-2"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submit_btn">
+                <span id="submit_text">Generate Template</span>
+                <span id="submit_spinner" class="spinner-border spinner-border-sm ms-2" style="display: none;" role="status">
+                    <span class="visually-hidden">Processing...</span>
+                </span>
+            </button>
+        </form>
+
+        <!-- Messages Section REMOVED -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show/hide LLM options based on selection
+            const traditionalMethod = document.getElementById('traditional_method');
+            const llmMethod = document.getElementById('llm_method');
+            const llmOptions = document.getElementById('llm_options');
+            
+            function toggleLLMOptions() {
+                if (llmMethod.checked) {
+                    llmOptions.style.display = 'block';
+                } else {
+                    llmOptions.style.display = 'none';
+                }
+            }
+            
+            traditionalMethod.addEventListener('change', toggleLLMOptions);
+            llmMethod.addEventListener('change', toggleLLMOptions);
+            
+            // Check API status
+            const checkApiBtn = document.getElementById('check_api_status');
+            const apiStatus = document.getElementById('api_status');
+            
+            if (checkApiBtn) {
+                checkApiBtn.addEventListener('click', async function() {
+                    const provider = document.querySelector('input[name="llm_provider"]:checked').value;
+                    apiStatus.innerHTML = '<span class="text-warning"><i class="bi bi-hourglass-split"></i> Checking...</span>';
+                    
+                    try {
+                        const response = await fetch('/api/check-llm-status/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                            },
+                            body: JSON.stringify({ provider: provider })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.status === 'ok') {
+                            apiStatus.innerHTML = '<span class="text-success"><i class="bi bi-check-circle"></i> Connected</span>';
+                        } else {
+                            apiStatus.innerHTML = `<span class="text-danger"><i class="bi bi-x-circle"></i> ${data.message || 'Connection failed'}</span>`;
+                        }
+                    } catch (error) {
+                        apiStatus.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle"></i> Connection failed</span>';
+                    }
+                });
+            }
+            
+            // Form submission handling
+            const form = document.querySelector('form');
+            const submitBtn = document.getElementById('submit_btn');
+            const submitText = document.getElementById('submit_text');
+            const submitSpinner = document.getElementById('submit_spinner');
+            
+            form.addEventListener('submit', function(e) {
+                // Validate file type
+                const fileInput = document.getElementById('source_file');
+                const file = fileInput.files[0];
+                
+                if (file && !file.name.toLowerCase().endsWith('.pdf')) {
+                    e.preventDefault();
+                    alert('Please select a PDF file');
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitSpinner.style.display = 'inline-block';
+                
+                if (llmMethod.checked) {
+                    submitText.textContent = 'Processing with AI...';
+                } else {
+                    submitText.textContent = 'Processing...';
+                }
+            });
+        });
+    </script>
+
+{% endblock body %}

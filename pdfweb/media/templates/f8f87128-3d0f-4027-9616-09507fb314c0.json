@@ -1,0 +1,70 @@
+{
+    "id": "f8f87128-3d0f-4027-9616-09507fb314c0",
+    "name": "Example",
+    "created_at": "2024-10-04",
+    "font": "Helvetica",
+    "font_size": 10,
+    "source": {
+        "template": {
+            "index": 1,
+            "pages": 1,
+            "file_path": "f8f87128-3d0f-4027-9616-09507fb314c0_example_form_labels_above.pdf",
+            "label_path": "f8f87128-3d0f-4027-9616-09507fb314c0_label.jpg",
+            "prediction_path": "f8f87128-3d0f-4027-9616-09507fb314c0_prediction.jpg"
+        },
+        "attachments": []
+    },
+    "fields": [
+        {
+            "name": "phone_number",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 34.0,
+            "pos_y": 429.1,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "city",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 34.0,
+            "pos_y": 499.7,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "address",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 34.0,
+            "pos_y": 570.3,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "surname",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 34.0,
+            "pos_y": 640.9,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "name",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 34.0,
+            "pos_y": 711.5,
+            "font_size": 12,
+            "font": "Helvetica"
+        }
+    ],
+    "last_updated": "2024-10-04"
+}

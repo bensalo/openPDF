@@ -1,0 +1,59 @@
+{% extends "master.html" %}
+
+{% block body %}
+<div class="container mt-5">
+    <h3>
+        <i class="bi bi-clipboard-check"></i> New Dataset
+    </h3>
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="dataset_name" class="form-label">Dataset Name</label>
+            <input type="text" name="dataset_name" id="dataset_name" class="form-control" 
+                   placeholder="Enter the name of the dataset" required>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Field</th>
+                    <th>Value</th>
+                    <th>Alias</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for field_name, field_value in fields.items %}
+                <tr>
+                    <!-- Checkbox für Aktivieren/Deaktivieren -->
+                    <td>
+                        <input type="checkbox" name="active_{{ field_name }}" id="active_{{ field_name }}" checked>
+                    </td>
+                    <!-- Feldname -->
+                    <td>
+                        <label for="active_{{ field_name }}">{{ field_name }}</label>
+                    </td>
+                    <!-- Feldwert -->
+                    <td>
+                        <input type="text" name="value_{{ field_name }}" id="value_{{ field_name }}" 
+                               value="{{ field_value }}" class="form-control">
+                    </td>
+                    <!-- Alias -->
+                    <td>
+                        <input type="text" name="alias_{{ field_name }}" id="alias_{{ field_name }}" 
+                               class="form-control" placeholder="Example1;Example2;">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'history' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check"></i> Save Dataset
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

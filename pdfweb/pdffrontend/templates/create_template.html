@@ -1,0 +1,83 @@
+{% extends "master.html" %}
+{% block body %}
+    <div class="container mt-5">
+        <h1>Add New Template</h1>
+        <form method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="template_name" class="form-label">Template Name</label>
+                <input type="text" id="template_name" name="template_name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="font" class="form-label">Font</label>
+                <select id="font" name="font" class="form-select" required>
+                    {% for font in AVAILABLE_FONTS %}
+                    <option value="{{ font }}">{{ font }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="font_size" class="form-label">Font Size</label>
+                <input type="number" id="font_size" name="font_size" class="form-control" required>
+            </div>
+            <div class="mb3">
+                <label for="template_source_index" class="form-label">Template Source Index</label>
+                <input type="number" id="template_source_index" name="template_source_index" class="form-control"required>
+            </div>
+            <div class="mb-3">
+                <label for="template_source_pages" class="form-label">Template Source Pages</label>
+                <input type="number" id="template_source_pages" name="template_source_pages" class="form-control" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="source_file" class="form-label">Template Source File</label>
+                <input type="file" id="source_file" name="source_file" class="form-control" required>
+            </div>
+            <div id="attachments_container">
+                <h4>Attachments</h4>
+                <button type="button" class="btn btn-success mb-3" onclick="addAttachment()">Add Attachment</button>
+                <div class="attachment mb-3">
+                    <label for="attachment_name_0" class="form-label">Attachment Name</label>
+                    <input type="text" id="attachment_name_0" name="attachment_name_0" class="form-control" required>
+                    <label for="attachment_index_0" class="form-label">Attachment Index</label>
+                    <input type="number" id="attachment_index_0" name="attachment_index_0" class="form-control"required>
+                    <label for="attachment_pages_0" class="form-label">Attachment Pages</label>
+                    <input type="number" id="attachment_pages_0" name="attachment_pages_0" class="form-control" required>
+                    <label for="attachment_file_0" class="form-label">Attachment File</label>
+                    <input type="file" id="attachment_file_0" name="attachment_file_0" class="form-control" required>
+                    <button type="button" class="btn btn-danger mt-2" onclick="removeAttachment(this)">Remove Attachment</button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        let attachmentIndex = 1;
+
+        function addAttachment() {
+            const container = document.getElementById('attachments_container');
+            const div = document.createElement('div');
+            div.classList.add('attachment', 'mb-3');
+            div.innerHTML = `
+                <label for="attachment_name_${attachmentIndex}" class="form-label">Attachment Name</label>
+                <input type="text" id="attachment_name_${attachmentIndex}" name="attachment_name_${attachmentIndex}" class="form-control" required>
+                <label for="attachment_index_${attachmentIndex}" class="form-label">Attachment Index</label>
+                <input type="number" id="attachment_index_${attachmentIndex}" name="attachment_index_${attachmentIndex}" class="form-control" required>
+                <label for="attachment_pages_${attachmentIndex}" class="form-label">Attachment Pages</label>
+                <input type="number" id="attachment_pages_${attachmentIndex}" name="attachment_pages_${attachmentIndex}" class="form-control" required>
+                <label for="attachment_file_${attachmentIndex}" class="form-label">Attachment File</label>
+                <input type="file" id="attachment_file_${attachmentIndex}" name="attachment_file_${attachmentIndex}" class="form-control" required>
+                <button type="button" class="btn btn-danger mt-2" onclick="removeAttachment(this)">Remove Attachment</button>
+            `;
+            container.appendChild(div);
+            attachmentIndex++;
+        }
+
+        function removeAttachment(button) {
+            const attachmentDiv = button.parentElement;
+            attachmentDiv.remove();
+        }
+    </script>
+
+{% endblock body %}

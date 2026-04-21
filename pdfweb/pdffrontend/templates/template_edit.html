@@ -1,0 +1,327 @@
+{% extends "master.html" %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h1><i class="bi bi-pencil-square"></i> Edit Template</h1>
+    <div class="mb-3">
+    </div>
+    <div class="mb-3">
+        <form method="post" action="" enctype="multipart/form-data" id="mainform">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="template_name" class="form-label">Template Name</label>
+                <input type="text" id="template_name" name="name" class="form-control" value="{{ template.name }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="template_font" class="form-label">Default Font</label>
+                <select id="template_font" name="font" class="form-select" required>
+                    {% for font in AVAILABLE_FONTS %}
+                    <option value="{{ font }}" {% if font == template.font %} selected {% endif %}>{{ font }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="template_font_size" class="form-label">Default Font Size</label>
+                <input type="number" id="template_font_size" name="font_size" class="form-control" value="{{ template.font_size }}" required>
+            </div>
+
+            <!-- New fields for source.template -->
+            <div class="mb-3">
+                <label for="source_template_index" class="form-label">Template Index</label>
+                <input type="number" id="source_template_index" name="source_template_index" class="form-control" value="{{ template.template_index }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="source_template_pages" class="form-label">Template Pages</label>
+                <input type="number" id="source_template_pages" name="source_template_pages" class="form-control" value="{{ template.template_pages }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="source_template_file" class="form-label">Upload Template File</label>
+                <input type="file" id="source_template_file" name="source_template_file" class="form-control">
+            </div>
+
+            <!-- Main accordion for attachments and fields -->
+            <div class="accordion mb-3" id="mainAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="attachmentsHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#attachmentsCollapse" aria-expanded="false" aria-controls="attachmentsCollapse">
+                            <i class="bi bi-paperclip"></i> Attachments
+                        </button>
+                    </h2>
+                    <div id="attachmentsCollapse" class="accordion-collapse collapse" aria-labelledby="attachmentsHeading" data-bs-parent="#mainAccordion">
+                        <div class="accordion-body">
+                            <div id="attachments">
+                                {% for attachment in template.attachments %}
+                                    <div class="accordion mb-3" id="attachmentAccordion_{{ forloop.counter }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading_{{ forloop.counter }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse_{{ forloop.counter }}">
+                                                    Attachment {{ forloop.counter }}: {{ attachment.name }}
+                                                </button>
+                                            </h2>
+                                            <div id="collapse_{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading_{{ forloop.counter }}" data-bs-parent="#attachmentAccordion_{{ forloop.counter }}">
+                                                <div class="accordion-body">
+                                                    <input type="hidden" name="attachment_delete_{{ forloop.counter }}" id="attachment_delete_{{ forloop.counter }}" value="">
+                                                    <label for="attachment_name_{{ forloop.counter }}" class="form-label">Attachment Name</label>
+                                                    <input type="text" id="attachment_name_{{ forloop.counter }}" name="attachment_name_{{ forloop.counter }}" class="form-control" value="{{ attachment.name }}" required>
+
+                                                    <label for="attachment_index_{{ forloop.counter }}" class="form-label">Attachment Index</label>
+                                                    <input type="number" id="attachment_index_{{ forloop.counter }}" name="attachment_index_{{ forloop.counter }}" class="form-control" value="{{ attachment.index }}" required>
+
+                                                    <label for="attachment_pages_{{ forloop.counter }}" class="form-label">Attachment Pages</label>
+                                                    <input type="number" id="attachment_pages_{{ forloop.counter }}" name="attachment_pages_{{ forloop.counter }}" class="form-control" value="{{ attachment.pages }}" required>
+
+                                                    <label for="attachment_file_{{ forloop.counter }}" class="form-label">Upload Attachment File</label>
+                                                    <input type="file" id="attachment_file_{{ forloop.counter }}" name="attachment_file_{{ forloop.counter }}" class="form-control">
+
+                                                    <button type="button" class="btn btn-danger mt-2" onclick="removeExistingAttachment({{ forloop.counter }})">
+                                                        <i class="bi bi-trash"></i> Remove Attachment
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="addAttachment()">
+                                <i class="bi bi-plus-circle"></i> Add Attachment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="fieldsHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fieldsCollapse" aria-expanded="false" aria-controls="fieldsCollapse">
+                            <i class="bi bi-list-task"></i> Fields
+                        </button>
+                    </h2>
+                    <div id="fieldsCollapse" class="accordion-collapse collapse" aria-labelledby="fieldsHeading" data-bs-parent="#mainAccordion">
+                        <div class="accordion-body">
+                            <div id="fields">
+                                {% for field in fields %}
+                                    <div class="accordion mb-3" id="fieldAccordion_{{ forloop.counter }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="fieldHeading_{{ forloop.counter }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fieldCollapse_{{ forloop.counter }}" aria-expanded="false" aria-controls="fieldCollapse_{{ forloop.counter }}">
+                                                    Field {{ forloop.counter }}: {{ field.name }}
+                                                </button>
+                                            </h2>
+                                            <div id="fieldCollapse_{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="fieldHeading_{{ forloop.counter }}" data-bs-parent="#fieldAccordion_{{ forloop.counter }}">
+                                                <div class="accordion-body">
+                                                    <input type="hidden" name="field_delete_{{ forloop.counter }}" id="field_delete_{{ forloop.counter }}" value="">
+                                                    <label for="field_name_{{ forloop.counter }}" class="form-label">Field Name</label>
+                                                    <input type="text" id="field_name_{{ forloop.counter }}" name="field_name_{{ forloop.counter }}" class="form-control" value="{{ field.name }}" required>
+
+                                                    <label for="field_type_{{ forloop.counter }}" class="form-label">Field Type</label>
+                                                    <select id="field_type_{{ forloop.counter }}" name="field_type_{{ forloop.counter }}" class="form-select" onchange="updateFieldType({{ forloop.counter }})" required>
+                                                        {% for type in FIELD_TYPES %}
+                                                        <option value="{{ type }}" {% if type == field.field_type %} selected {% endif %}>{{ type }}</option>
+                                                        {% endfor %}
+                                                    </select>
+
+                                                    <label for="field_required_{{ forloop.counter }}" class="form-label">Required</label>
+                                                    <input type="checkbox" id="field_required_{{ forloop.counter }}" name="field_required_{{ forloop.counter }}" class="form-check-input" {% if field.required %}checked{% endif %}>
+                                                    <br>
+                                                    <label for="field_page_index_{{ forloop.counter }}" class="form-label">Page Index</label>
+                                                    <input type="number" id="field_page_index_{{ forloop.counter }}" name="field_page_index_{{ forloop.counter }}" class="form-control" value="{{ field.page_index }}" required>
+
+                                                    <label for="field_font_{{ forloop.counter }}" class="form-label">Font</label>
+                                                    <select id="field_font_{{ forloop.counter }}" name="field_font_{{ forloop.counter }}" class="form-select">
+                                                        {% for font in AVAILABLE_FONTS %}
+                                                        <option value="{{ font }}" {% if font == field.font %} selected {% endif %}>{{ font }}</option>
+                                                        {% endfor %}
+                                                    </select>
+
+                                                    <label for="field_font_size_{{ forloop.counter }}" class="form-label">Font Size</label>
+                                                    <input type="number" id="field_font_size_{{ forloop.counter }}" name="field_font_size_{{ forloop.counter }}" class="form-control" value="{{ field.font_size }}">
+
+                                                    <label for="field_pos_x_{{ forloop.counter }}" class="form-label">Position X</label>
+                                                    <input type="number" step="0.001" id="field_pos_x_{{ forloop.counter }}" name="field_pos_x_{{ forloop.counter }}" class="form-control" value="{{ field.pos_x }}" required>
+
+                                                    <label for="field_pos_y_{{ forloop.counter }}" class="form-label">Position Y</label>
+                                                    <input type="number" step="0.001" id="field_pos_y_{{ forloop.counter }}" name="field_pos_y_{{ forloop.counter }}" class="form-control" value="{{ field.pos_y }}" required>
+
+                                                    <div id="additional_fields_{{ forloop.counter }}">
+                                                        {% if field.field_type == "textarea" %}
+                                                        <label for="field_width_{{ forloop.counter }}" class="form-label">Width</label>
+                                                        <input type="number" id="field_width_{{ forloop.counter }}" name="field_width_{{ forloop.counter }}" class="form-control" value="{{ field.width }}">
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <button type="button" class="btn btn-danger mt-2" onclick="removeExistingField({{ forloop.counter }})">
+                                                        <i class="bi bi-trash"></i> Remove Field
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="addField()">
+                                <i class="bi bi-plus-circle"></i> Add Field
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" form="mainform">
+                <i class="bi bi-save"></i> Save
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    let attachmentCounter = {{ template.attachments|length }};
+    let fieldCounter = {{ fields|length }};
+
+    function addAttachment() {
+        attachmentCounter++;
+        const attachmentsDiv = document.getElementById('attachments');
+        const attachmentItem = document.createElement('div');
+        attachmentItem.classList.add('accordion', 'mb-3');
+        attachmentItem.setAttribute('id', `attachmentAccordion_${attachmentCounter}`);
+        attachmentItem.innerHTML = `
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading_${attachmentCounter}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_${attachmentCounter}" aria-expanded="false" aria-controls="collapse_${attachmentCounter}">
+                        Attachment ${attachmentCounter}: <span id="attachment_header_name_${attachmentCounter}"> </span>
+                    </button>
+                </h2>
+                <div id="collapse_${attachmentCounter}" class="accordion-collapse collapse" aria-labelledby="heading_${attachmentCounter}" data-bs-parent="#attachmentAccordion_${attachmentCounter}">
+                    <div class="accordion-body">
+                        <input type="hidden" name="attachment_delete_${attachmentCounter}" id="attachment_delete_${attachmentCounter}" value="">
+                        <label for="attachment_name_${attachmentCounter}" class="form-label">Attachment Name</label>
+                        <input type="text" id="attachment_name_${attachmentCounter}" name="attachment_name_${attachmentCounter}" class="form-control" required oninput="updateHeaderName(${attachmentCounter})">
+                        
+                        <label for="attachment_index_${attachmentCounter}" class="form-label">Attachment Index</label>
+                        <input type="number" id="attachment_index_${attachmentCounter}" name="attachment_index_${attachmentCounter}" class="form-control" required>
+                        
+                        <label for="attachment_pages_${attachmentCounter}" class="form-label">Attachment Pages</label>
+                        <input type="number" id="attachment_pages_${attachmentCounter}" name="attachment_pages_${attachmentCounter}" class="form-control" required>
+                        
+                        <label for="attachment_file_${attachmentCounter}" class="form-label">Upload Attachment File</label>
+                        <input type="file" id="attachment_file_${attachmentCounter}" name="attachment_file_${attachmentCounter}" class="form-control">
+
+                        <button type="button" class="btn btn-danger mt-2" onclick="removeNewAttachment(${attachmentCounter})">
+                            <i class="bi bi-trash"></i> Remove Attachment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        attachmentsDiv.appendChild(attachmentItem);
+    }
+
+    function addField() {
+        fieldCounter++;
+        const fieldsDiv = document.getElementById('fields');
+        const fieldItem = document.createElement('div');
+        fieldItem.classList.add('accordion', 'mb-3');
+        fieldItem.setAttribute('id', `fieldAccordion_${fieldCounter}`);
+        fieldItem.innerHTML = `
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="fieldHeading_${fieldCounter}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fieldCollapse_${fieldCounter}" aria-expanded="false" aria-controls="fieldCollapse_${fieldCounter}">
+                        Field ${fieldCounter}: <span id="field_header_name_${fieldCounter}"></span>
+                    </button>
+                </h2>
+                <div id="fieldCollapse_${fieldCounter}" class="accordion-collapse collapse" aria-labelledby="fieldHeading_${fieldCounter}" data-bs-parent="#fieldAccordion_${fieldCounter}">
+                    <div class="accordion-body">
+                        <input type="hidden" name="field_delete_${fieldCounter}" id="field_delete_${fieldCounter}" value="">
+                        <label for="field_name_${fieldCounter}" class="form-label">Field Name</label>
+                        <input type="text" id="field_name_${fieldCounter}" name="field_name_${fieldCounter}" class="form-control" required oninput="updateFieldHeaderName(${fieldCounter})">
+                        
+                        <label for="field_type_${fieldCounter}" class="form-label">Field Type</label>
+                        <select id="field_type_${fieldCounter}" name="field_type_${fieldCounter}" class="form-select" onchange="updateFieldType(${fieldCounter})" required>
+                            {% for type in FIELD_TYPES %}
+                            <option value="{{ type }}">{{ type }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="field_required_${fieldCounter}" class="form-label">Required</label>
+                        <input type="checkbox" id="field_required_${fieldCounter}" name="field_required_${fieldCounter}" class="form-check-input">
+                        <br>
+                        <label for="field_page_index_${fieldCounter}" class="form-label">Page Index</label>
+                        <input type="number" id="field_page_index_${fieldCounter}" name="field_page_index_${fieldCounter}" class="form-control" value="0" required>
+                    
+                        <label for="field_font_${fieldCounter}" class="form-label">Font</label>
+                        <select id="field_font_${fieldCounter}" name="field_font_${fieldCounter}" class="form-select">
+                            {% for font in AVAILABLE_FONTS %}
+                            <option value="{{ font }}">{{ font }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="field_font_size_${fieldCounter}" class="form-label">Font Size</label>
+                        <input type="number" id="field_font_size_${fieldCounter}" name="field_font_size_${fieldCounter}" class="form-control">
+            
+                        <label for="field_pos_x_${fieldCounter}" class="form-label">Position X</label>
+                        <input type="number" id="field_pos_x_${fieldCounter}" name="field_pos_x_${fieldCounter}" class="form-control" required>
+                        
+                        <label for="field_pos_y_${fieldCounter}" class="form-label">Position Y</label>
+                        <input type="number" id="field_pos_y_${fieldCounter}" name="field_pos_y_${fieldCounter}" class="form-control" required>
+
+                        <div id="additional_fields_${fieldCounter}"></div>
+
+                        <button type="button" class="btn btn-danger mt-2" onclick="removeNewField(${fieldCounter})">
+                            <i class="bi bi-trash"></i> Remove Field
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        fieldsDiv.appendChild(fieldItem);
+    }
+
+    function updateHeaderName(counter) {
+        const attachmentNameInput = document.getElementById(`attachment_name_${counter}`);
+        const attachmentHeaderName = document.getElementById(`attachment_header_name_${counter}`);
+        attachmentHeaderName.textContent = attachmentNameInput.value;
+    }
+
+    function updateFieldHeaderName(counter) {
+        const fieldNameInput = document.getElementById(`field_name_${counter}`);
+        const fieldHeaderName = document.getElementById(`field_header_name_${counter}`);
+        fieldHeaderName.textContent = fieldNameInput.value;
+    }
+
+    function updateFieldType(counter) {
+        const fieldTypeInput = document.getElementById(`field_type_${counter}`);
+        const additionalFieldsDiv = document.getElementById(`additional_fields_${counter}`);
+
+        if (fieldTypeInput.value === "textarea") {
+            additionalFieldsDiv.innerHTML = `
+                <label for="field_width_${counter}" class="form-label">Width</label>
+                <input type="number" id="field_width_${counter}" name="field_width_${counter}" class="form-control">
+            `;
+        } else {
+            additionalFieldsDiv.innerHTML = '';
+        }
+    }
+
+    function removeExistingAttachment(counter) {
+        document.getElementById(`attachment_delete_${counter}`).value = 'DELETE';
+        const attachmentItem = document.getElementById(`attachmentAccordion_${counter}`);
+        attachmentItem.style.display = 'none';
+    }
+
+    function removeNewAttachment(counter) {
+        const attachmentItem = document.getElementById(`attachmentAccordion_${counter}`);
+        attachmentItem.remove();
+    }
+
+    function removeExistingField(counter) {
+        document.getElementById(`field_delete_${counter}`).value = 'DELETE';
+        const fieldItem = document.getElementById(`fieldAccordion_${counter}`);
+        fieldItem.style.display = 'none';
+    }
+
+    function removeNewField(counter) {
+        const fieldItem = document.getElementById(`fieldAccordion_${counter}`);
+        fieldItem.remove();
+    }
+</script>
+
+{% endblock %}

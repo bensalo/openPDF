@@ -1,0 +1,106 @@
+{% extends "master.html" %}
+{% load custom_filters %}
+
+{% block body %}
+<div class="container mt-5">
+    <h3>
+        <i class="bi bi-file-earmark-pdf"></i> Create PDF from {{template.name}}
+    </h3>
+
+    <!-- Form Fields Section -->
+    <form method="post" action="" id="mainform">
+        {% csrf_token %}
+        {% for field in fields %}
+            <div class="mb-3">
+                {% if field.field_type == "text" %}
+                    <label for="{{ field.name }}" class="form-label">{{ field.name }}</label>
+                    <input type="text" id="{{ field.name }}" name="{{ field.name }}" class="form-control" 
+                        value="{{ preload_data|get_item:field.name }}" {% if field.required %}required{% endif %}>
+                {% elif field.field_type == "textarea" %}
+                    <label for="{{ field.name }}" class="form-label">{{ field.name }}</label>
+                    <textarea id="{{ field.name }}" name="{{ field.name }}" class="form-control" 
+                            {% if field.required %}required{% endif %}>{{ preload_data|get_item:field.name }}</textarea>
+                {% elif field.field_type == "checkbox" %}
+                    <div class="form-check">
+                        <input type="checkbox" id="{{ field.name }}" name="{{ field.name }}" class="form-check-input" 
+                            {% if preload_data|get_item:field.name %}checked{% endif %} {% if field.required %}required{% endif %}>
+                        <label for="{{ field.name }}" class="form-check-label">{{ field.name }}</label>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    
+        <!-- Attachments Section -->
+        <div class="mb-3">
+            <h4><i class="bi bi-paperclip"></i> Attachments</h4>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="enable_attachments" onchange="toggleAttachments(this)" checked>
+                <label class="form-check-label" for="enable_attachments">
+                    Attachments
+                </label>
+            </div>
+            <div id="attachments_container">
+                {% for attachment in template.source.attachments %}
+                    <div class="form-check">
+                        <input class="form-check-input attachment-checkbox" type="checkbox" id="attachment_{{ attachment.name }}" name="attachment_{{ attachment.name }}" checked>
+                        <label class="form-check-label" for="attachment_{{ attachment.name }}">
+                            {{ attachment.name }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fixed Footer Navbar -->
+{% block footer %}
+<div class="container-fluid" style="padding-bottom: 60px;">
+        <nav class="navbar fixed-bottom bg-dark justify-content-end gap-2 px-2">
+            <!-- Dataset Dropdown -->
+            <div class="nav-item dropup">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        Select Dataset
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for dataset in datasets %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'dataset_use' dataset.id template.id %}">
+                                {{ dataset.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="nav-item">
+                <div class="input-group">
+                    <input type="text" id="output_filename" name="output_filename" class="input form-control" value="{{ template.name | lower}}" required>    
+                    <span class="input-group-text" id="basic-addon2">.pdf</span>
+                </div>
+            </div>
+            <div class="nav-item">
+                <button type="submit" class="btn btn-success" form="mainform">
+                    <i class="bi bi-file-earmark-arrow-down"></i> Generate PDF
+                </button>
+            </div>
+        </nav>   
+    </div>
+</form>
+{% endblock %}
+
+<script>
+    function toggleAttachments(checkbox) {
+        const attachmentCheckboxes = document.querySelectorAll('.attachment-checkbox');
+        attachmentCheckboxes.forEach(cb => {
+            cb.disabled = !checkbox.checked;
+        });
+    }
+
+    // Initial call to set the disabled state of the checkboxes based on the enable_attachments checkbox
+    document.addEventListener('DOMContentLoaded', (event) => {
+        toggleAttachments(document.getElementById('enable_attachments'));
+    });
+</script>
+
+{% endblock %}

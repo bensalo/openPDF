@@ -1,0 +1,25 @@
+{% extends "master.html" %}
+
+{% block title %}Settings{% endblock title %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1><i class="bi bi-gear"></i> Project Settings</h1>
+    <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Font File Upload -->
+        <div class="mb-3">
+            <label for="font_file" class="form-label">Upload Font File (.ttf)</label>
+            <input type="file" id="font_file" name="font_file" class="form-control">
+        </div>
+        
+        <!-- Other Settings -->
+        <!-- Add other settings fields here -->
+
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save"></i> Upload
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{
+    "id": "0a4db299-65f8-422c-aedd-022e66613ee6",
+    "name": "Anmeldeformular",
+    "created_at": "2024-10-04",
+    "font": "Helvetica",
+    "font_size": 10,
+    "source": {
+        "template": {
+            "index": 1,
+            "pages": 1,
+            "file_path": "0a4db299-65f8-422c-aedd-022e66613ee6_anmeldeformular.pdf",
+            "label_path": "0a4db299-65f8-422c-aedd-022e66613ee6_label.jpg",
+            "prediction_path": "0a4db299-65f8-422c-aedd-022e66613ee6_prediction.jpg"
+        },
+        "attachments": []
+    },
+    "fields": [
+        {
+            "name": "unterschrift",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 175.2,
+            "pos_y": 434.8,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "postleitzahl",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 175.2,
+            "pos_y": 485.7,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "ort",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 175.2,
+            "pos_y": 536.6,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "straße",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 175.2,
+            "pos_y": 587.1,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "e-mail",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 175.2,
+            "pos_y": 638.0,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "nachname",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 175.2,
+            "pos_y": 688.9,
+            "font_size": 12,
+            "font": "Helvetica"
+        },
+        {
+            "name": "vorname",
+            "field_type": "text",
+            "required": false,
+            "page_index": 0,
+            "pos_x": 175.2,
+            "pos_y": 739.8,
+            "font_size": 12,
+            "font": "Helvetica"
+        }
+    ],
+    "last_updated": "2024-10-04"
+}
