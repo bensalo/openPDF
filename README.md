@@ -1,5 +1,4 @@
-# OpenPDF - Bachelorarbeit Ben Salomon 2024
-betreut von Prof. Dr. Faßbender, FH Aachen. Unterstützt von RelAix Networks GmbH.
+# OpenPDF - Bachelorarbeit Ben Salomon 2026.
 
 # Installation / Setup
 
@@ -14,7 +13,7 @@ conda activate openpdf
 ```
 4. start server
 ```
-
+python manage.py runserver
 ```
 
 # Roadmap
