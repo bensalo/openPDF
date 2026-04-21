@@ -13,7 +13,7 @@ conda activate openpdf
 ```
 4. start server
 ```
-
+python manage.py runserver
 ```
 
 # Roadmap
